@@ -334,7 +334,11 @@ export function FindAllPassengerReservations() {
         console.log("Get reservation list from passenger with id:", passengerId);
         setReservations([]);
         setShowErrorMessage(false);
+        /*
         fetch("http://localhost:8080/api/v1/passengers/" + passengerId + "/reservations", {
+            method: "GET"
+        })*/
+        fetch(`${API_URL}/api/v1/passengers/${passengerId}/reservations`, {
             method: "GET"
         })
             .then(response => {

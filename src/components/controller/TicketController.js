@@ -2,6 +2,8 @@ import * as React from 'react';
 import TextField from '@mui/material/TextField';
 import {Paper, Button} from '@mui/material';
 
+const API_URL = process.env.REACT_APP_API_URL;
+export default API_URL;
 
 const paperStyle = {
     padding: "5px 0px",
@@ -45,6 +47,7 @@ export function FindTickets() {
     const [errorMessage, setErrorMessage] = React.useState("");
     const [showErrorMessage, setShowErrorMessage] = React.useState(false);
 
+    /*
     const find = () => {
         let path = "";
         if(departureTown.trim() !== "" && arrivalTown.trim() !== "") {
@@ -82,7 +85,42 @@ export function FindTickets() {
             }
         }
         refreshTicketList(path);
-    }
+    }*/
+
+    const find = () => {
+        let path = "";
+        if (departureTown.trim() !== "" && arrivalTown.trim() !== "") {
+            console.log("1");
+            if (findUnreserved) {
+                path = `${API_URL}/api/v1/tickets/unreserved/departure_town/${departureTown}/arrival_town/${arrivalTown}`;
+            } else {
+                path = `${API_URL}/api/v1/tickets/departure_town/${departureTown}/arrival_town/${arrivalTown}`;
+            }
+        } else if (departureTown.trim() !== "") {
+            console.log("2");
+            if (findUnreserved) {
+                path = `${API_URL}/api/v1/tickets/unreserved/departure_town/${departureTown}`;
+            } else {
+                path = `${API_URL}/api/v1/tickets/departure_town/${departureTown}`;
+            }
+        } else if (arrivalTown.trim() !== "") {
+            console.log("3");
+            if (findUnreserved) {
+                path = `${API_URL}/api/v1/tickets/unreserved/arrival_town/${arrivalTown}`;
+            } else {
+                path = `${API_URL}/api/v1/tickets/arrival_town/${arrivalTown}`;
+            }
+        } else {
+            console.log("4");
+            if (findUnreserved) {
+                path = `${API_URL}/api/v1/tickets/unreserved`;
+            } else {
+                path = `${API_URL}/api/v1/tickets`;
+            }
+        }
+        refreshTicketList(path);
+    };
+
 
     const refreshTicketList = (requestPath) => {
         console.log("Refresh ticket list");
@@ -174,10 +212,18 @@ export function AddTickets() {
         setShowErrorMessage(false);
         const newTicket = {price}
         console.log(newTicket);
+        /*
         fetch("http://localhost:8080/api/v1/tickets/save_tickets/" + flightId + "/" + numOfTickets,{
             method:"POST",
             headers:{"Content-Type":"application/json"},
             body:JSON.stringify(newTicket)
+        })*/
+        fetch(`${API_URL}/api/v1/tickets/save_tickets/${flightId}/${numOfTickets}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newTicket)
         })
             .then(response => {
                 if (response.ok) {
@@ -244,7 +290,11 @@ export function GetTicketByIdAndProcessIt() {
     const handleFind = (name) => {
         console.log("Find ticket by id");
         setShowErrorMessage(false);
+        /*
         fetch(("http://localhost:8080/api/v1/tickets/" + ticketId), {
+            method: "GET"
+        })*/
+        fetch(`${API_URL}/api/v1/tickets/${ticketId}`, {
             method: "GET"
         })
             .then(response => {
@@ -276,7 +326,11 @@ export function GetTicketByIdAndProcessIt() {
 
     const handleDelete = (id) => {
         console.log("Delete ticket:", ticket);
+        /*
         fetch(`http://localhost:8080/api/v1/tickets/delete_ticket/` + id, {
+            method: "DELETE"
+        })*/
+        fetch(`${API_URL}/api/v1/tickets/delete_ticket/${id}`, {
             method: "DELETE"
         })
             .then(response => {
@@ -297,9 +351,17 @@ export function GetTicketByIdAndProcessIt() {
     const update = (id, price, flightId) => {
         const updatedTicket = { id, price };
         console.log("Update ticket:", updatedTicket);
+        /*
         fetch(`http://localhost:8080/api/v1/tickets/update_ticket/flight_id/` + flightId, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(updatedTicket)
+        })*/
+        fetch(`${API_URL}/api/v1/tickets/update_ticket/flight_id/${flightId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
             body: JSON.stringify(updatedTicket)
         })
             .then(response => {
@@ -408,10 +470,18 @@ export function BookTicket() {
     const handleBookButton = () => {
         console.log("Book ticket");
         setShowErrorMessage(false);
+        /*
         fetch("http://localhost:8080/api/v1/reservations/booking/ticket_id/" + ticketId + "/passenger_id/" +
             passengerId, {
             method:"POST",
             headers:{"Content-Type":"application/json"},
+        })
+        */
+        fetch(`${API_URL}/api/v1/reservations/booking/ticket_id/${ticketId}/passenger_id/${passengerId}`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
         })
             .then(response => {
                 if (response.ok) {
@@ -462,8 +532,12 @@ export function CancelBookTicket() {
     const handleCancelBookButton = () => {
         console.log("cancel Book ticket");
         setShowErrorMessage(false);
+        /*
         fetch("http://localhost:8080/api/v1/reservations/cancel_booking/ticket_id/" + ticketId, {
             method:"DELETE",
+        })*/
+        fetch(`${API_URL}/api/v1/reservations/cancel_booking/ticket_id/${ticketId}`, {
+            method: "DELETE"
         })
             .then(response => {
                 if (response.ok) {
